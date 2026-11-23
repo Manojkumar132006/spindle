@@ -1,0 +1,30 @@
+{
+  "name": "spindle-obsidian",
+  "version": "1.0.0",
+  "description": "Spindle Constraint-Driven Narrative Intelligence Plugin for Obsidian",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "narrative",
+    "fiction-writing",
+    "ai",
+    "langgraph"
+  ],
+  "author": "Spindle Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "esbuild": "^0.24.0",
+    "obsidian": "^1.7.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.2"
+  }
+}

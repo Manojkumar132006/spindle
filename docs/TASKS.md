@@ -165,31 +165,31 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 6: Obsidian Plugin Implementation
 
 ### Task 6.1: Plugin Scaffold & Backend Client
-- [ ] Initialize TypeScript Obsidian plugin project in `obsidian-plugin/` with `esbuild`.
-- [ ] Implement typed API client (`backendClient.ts`) for all Spindle endpoints.
-- [ ] Implement Settings tab (backend URL, project ID, connection test).
-- [ ] **Review Gate 6.1:** Plugin loads in Obsidian, connects to backend `/health`, and displays connection status.
+- [x] Initialize TypeScript Obsidian plugin project in `obsidian-plugin/` with `esbuild`.
+- [x] Implement typed API client (`backendClient.ts`) for all Spindle endpoints.
+- [x] Implement Settings tab (backend URL, project ID, connection test).
+- [x] **Review Gate 6.1:** Plugin loads in Obsidian, connects to backend `/health`, and displays connection status.
 
 ### Task 6.2: Vault Synchronization Interface
-- [ ] Implement local vault scanner reading frontmatter, wiki-links, and markdown files.
-- [ ] Build Sync command in Obsidian to push changed files to backend.
-- [ ] Display sync status, last indexed timestamp, and error reporting.
-- [ ] **Review Gate 6.2:** Syncing a sample vault populates the backend database from within Obsidian.
+- [x] Implement local vault scanner reading frontmatter, wiki-links, and markdown files.
+- [x] Build Sync command in Obsidian to push changed files to backend.
+- [x] Display sync status, last indexed timestamp, and error reporting.
+- [x] **Review Gate 6.2:** Syncing a sample vault populates the backend database from within Obsidian.
 
 ### Task 6.3: Story Overview & Generation UI
-- [ ] Implement `StoryOverviewView` side-panel displaying:
+- [x] Implement `StoryOverviewView` side-panel displaying:
   - Character count, Event count, Location count, Active constraints, Unresolved threads.
-- [ ] Implement `GenerateModal` allowing free-form author prompt and mode selection (Plot Point, Side Story, Continuity).
-- [ ] **Review Gate 6.3:** Author can view story metrics and trigger a generation request directly from Obsidian.
+- [x] Implement `GenerateModal` allowing free-form author prompt and mode selection (Plot Point, Side Story, Continuity).
+- [x] **Review Gate 6.3:** Author can view story metrics and trigger a generation request directly from Obsidian.
 
 ### Task 6.4: Suggestion Review & Canon Commitment Modal
-- [ ] Implement `SuggestionReviewModal`:
+- [x] Implement `SuggestionReviewModal`:
   - Displays generated proposal, premise, and narrative reasoning.
   - Highlights supporting source citations.
   - Displays Constraint Validation Report (pass/fail/warning tags).
   - Action buttons: Approve, Edit, Reject (with reason), and Commit to Vault.
-- [ ] Ensure committed suggestions write safely to designated vault path without altering existing manuscripts.
-- [ ] **Review Gate 6.4:** Author can review suggestion, inspect validation warnings, approve, and commit a new markdown note to the vault.
+- [x] Ensure committed suggestions write safely to designated vault path without altering existing manuscripts.
+- [x] **Review Gate 6.4:** Author can review suggestion, inspect validation warnings, approve, and commit a new markdown note to the vault.
 
 ---
 
