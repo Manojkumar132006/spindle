@@ -24,6 +24,14 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3000", "app://obsidian.md"]
 
+    # LLM Providers (Gemini, OpenAI, etc.)
+    GEMINI_API_KEY: str | None = None
+    GOOGLE_API_KEY: str | None = None
+    OPENAI_API_KEY: str | None = None
+    LLM_API_KEY: str | None = None
+    LLM_MODEL: str = "gemini-2.0-flash"
+    LLM_BASE_URL: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
