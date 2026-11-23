@@ -55,4 +55,3 @@ class CharacterKnowledge(UUIDBaseModel):
     # Relationships
     character: Mapped["Character"] = relationship("Character", back_populates="knowledge_items")
     source_event: Mapped["Event | None"] = relationship("Event")
-
