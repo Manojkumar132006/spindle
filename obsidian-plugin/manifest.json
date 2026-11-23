@@ -1,0 +1,10 @@
+{
+  "id": "spindle-narrative",
+  "name": "Spindle Narrative Intelligence",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Constraint-driven narrative intelligence and canon continuity for fiction authors.",
+  "author": "Spindle Team",
+  "authorUrl": "https://github.com/Manojkumar132006/spindle",
+  "isDesktopOnly": true
+}
