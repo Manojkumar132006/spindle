@@ -1,0 +1,7 @@
+{
+  "backendUrl": "http://localhost:8000",
+  "projectId": "34b5ab17-f658-4448-a19a-c5b16aaf0fb3",
+  "defaultDestinationFolder": "Manuscript/Side Stories",
+  "autoSyncOnSave": true,
+  "defaultNarrativePosition": 1
+}

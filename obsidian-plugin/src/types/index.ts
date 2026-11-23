@@ -83,12 +83,21 @@ export interface Suggestion {
 export interface StoryOverview {
   project_id: string;
   project_name: string;
-  character_count: number;
-  event_count: number;
-  location_count: number;
-  active_constraints: number;
-  unresolved_threads: number;
-  total_documents: number;
+  characters_count?: number;
+  events_count?: number;
+  locations_count?: number;
+  world_rules_count?: number;
+  constraints_count?: number;
+  open_threads_count?: number;
+  documents_count?: number;
+
+  // Compatibility aliases
+  character_count?: number;
+  event_count?: number;
+  location_count?: number;
+  active_constraints?: number;
+  unresolved_threads?: number;
+  total_documents?: number;
 }
 
 export interface SyncFileInput {

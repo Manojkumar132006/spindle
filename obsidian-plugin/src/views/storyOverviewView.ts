@@ -109,12 +109,24 @@ export class StoryOverviewView extends ItemView {
     if (this.overviewData) {
       const metricsGrid = container.createDiv({ cls: "spindle-metrics-grid" });
 
-      this.createMetricCard(metricsGrid, "🎭 Characters", this.overviewData.character_count);
-      this.createMetricCard(metricsGrid, "⏳ Events", this.overviewData.event_count);
-      this.createMetricCard(metricsGrid, "🏰 Locations", this.overviewData.location_count);
-      this.createMetricCard(metricsGrid, "⚠️ Constraints", this.overviewData.active_constraints);
-      this.createMetricCard(metricsGrid, "❓ Open Threads", this.overviewData.unresolved_threads);
-      this.createMetricCard(metricsGrid, "📄 Documents", this.overviewData.total_documents);
+      const chars =
+        this.overviewData.characters_count ?? this.overviewData.character_count ?? 0;
+      const events = this.overviewData.events_count ?? this.overviewData.event_count ?? 0;
+      const locs = this.overviewData.locations_count ?? this.overviewData.location_count ?? 0;
+      const rules = this.overviewData.world_rules_count ?? 0;
+      const constraints =
+        this.overviewData.constraints_count ?? this.overviewData.active_constraints ?? 0;
+      const threads =
+        this.overviewData.open_threads_count ?? this.overviewData.unresolved_threads ?? 0;
+      const docs = this.overviewData.documents_count ?? this.overviewData.total_documents ?? 0;
+
+      this.createMetricCard(metricsGrid, "🎭 Characters", chars);
+      this.createMetricCard(metricsGrid, "⏳ Events", events);
+      this.createMetricCard(metricsGrid, "🏰 Locations", locs);
+      this.createMetricCard(metricsGrid, "📜 World Rules", rules);
+      this.createMetricCard(metricsGrid, "⚠️ Constraints", constraints);
+      this.createMetricCard(metricsGrid, "❓ Open Threads", threads);
+      this.createMetricCard(metricsGrid, "📄 Documents", docs);
     }
 
     // Action Buttons

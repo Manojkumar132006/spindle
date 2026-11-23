@@ -68,6 +68,14 @@ class StoryOverviewResponse(BaseModel):
     documents_count: int
     last_synced_at: datetime | None
 
+    # Alternative / alias keys for client compatibility
+    character_count: int | None = None
+    event_count: int | None = None
+    location_count: int | None = None
+    active_constraints: int | None = None
+    unresolved_threads: int | None = None
+    total_documents: int | None = None
+
 
 class EntitySummary(BaseModel):
     """Normalized summary of a story entity."""
