@@ -79,26 +79,26 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 3: Narrative State Service & Constraint Engine
 
 ### Task 3.1: Narrative State Service
-- [ ] Implement `backend/spindle/core/state_service.py` with `get_story_state(project_id, narrative_position, branch_id)`.
-- [ ] Decouple `narrative_position` (manuscript order) from chronological timeline `order`.
-- [ ] Assemble point-in-time state: characters, established events, active world rules, active constraints, and open narrative threads.
-- [ ] **Review Gate 3.1:** Unit tests verify correct narrative state snapshot generation at varying scene positions.
+- [x] Implement `backend/spindle/core/state_service.py` with `get_story_state(project_id, narrative_position, branch_id)`.
+- [x] Decouple `narrative_position` (manuscript order) from chronological timeline `order`.
+- [x] Assemble point-in-time state: characters, established events, active world rules, active constraints, and open narrative threads.
+- [x] **Review Gate 3.1:** Unit tests verify correct narrative state snapshot generation at varying scene positions.
 
 ### Task 3.2: Character Epistemic (Knowledge) Ledger
-- [ ] Implement epistemic state query in `backend/spindle/core/knowledge.py`.
-- [ ] Track knowledge status: `UNKNOWN`, `SUSPECTED`, `BELIEVED`, `CONFIRMED`, `FALSE_BELIEF`, `CONCEALED`.
-- [ ] Validate what a character knows at a specific narrative event.
-- [ ] **Review Gate 3.2:** Unit tests verify epistemic status transitions and prevent anachronistic knowledge leakage.
+- [x] Implement epistemic state query in `backend/spindle/core/knowledge.py`.
+- [x] Track knowledge status: `UNKNOWN`, `SUSPECTED`, `BELIEVED`, `CONFIRMED`, `FALSE_BELIEF`, `CONCEALED`.
+- [x] Validate what a character knows at a specific narrative event.
+- [x] **Review Gate 3.2:** Unit tests verify epistemic status transitions and prevent anachronistic knowledge leakage.
 
 ### Task 3.3: Centralized Constraint Engine & Deterministic Validators
-- [ ] Implement `backend/spindle/core/constraints/engine.py` supporting `PASS`, `FAIL`, `WARNING`, `INSUFFICIENT_CONTEXT`.
-- [ ] Implement deterministic validators in `backend/spindle/core/constraints/deterministic/`:
-  - [ ] `chronology.py`: Temporal ordering and causality validator (precondition must precede event).
-  - [ ] `life_status.py`: Character life/death availability checker.
-  - [ ] `epistemic.py`: Character knowledge boundary validator.
-  - [ ] `world_rule.py`: Hard world rule limit checker.
-- [ ] Return structured `ValidationReport` with rule IDs, outcomes, and failure rationale.
-- [ ] **Review Gate 3.3:** Unit tests verify that hard constraint violations immediately trigger `FAIL` with descriptive diagnostic output.
+- [x] Implement `backend/spindle/core/constraints/engine.py` supporting `PASS`, `FAIL`, `WARNING`, `INSUFFICIENT_CONTEXT`.
+- [x] Implement deterministic validators in `backend/spindle/core/constraints/deterministic/`:
+  - [x] `chronology.py`: Temporal ordering and causality validator (precondition must precede event).
+  - [x] `life_status.py`: Character life/death availability checker.
+  - [x] `epistemic.py`: Character knowledge boundary validator.
+  - [x] `world_rule.py`: Hard world rule limit checker.
+- [x] Return structured `ValidationReport` with rule IDs, outcomes, and failure rationale.
+- [x] **Review Gate 3.3:** Unit tests verify that hard constraint violations immediately trigger `FAIL` with descriptive diagnostic output.
 
 ---
 
