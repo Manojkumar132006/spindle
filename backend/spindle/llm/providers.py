@@ -130,7 +130,7 @@ class GeminiClient(BaseLLMClient):
         api_key: str,
         model: str = "gemini-3.6-flash",
         base_url: str = "https://generativelanguage.googleapis.com/v1beta",
-        timeout: float = 45.0,
+        timeout: float = 60.0,
         max_retries: int = 2,
     ) -> None:
         self.api_key = api_key
