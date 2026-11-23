@@ -9,6 +9,7 @@ from sqlalchemy.orm import selectinload
 
 from spindle.models.base import CanonStatus, ThreadStatus
 from spindle.models.constraint import Constraint
+from spindle.models.document import SourceDocument
 from spindle.models.entity import Character, Location, Relationship, WorldRule
 from spindle.models.event import Event, NarrativeThread
 from spindle.models.knowledge import CharacterKnowledge
@@ -29,6 +30,7 @@ class StoryState:
     locations: list[Location] = field(default_factory=list)
     relationships: list[Relationship] = field(default_factory=list)
     character_knowledge: dict[uuid.UUID, list[CharacterKnowledge]] = field(default_factory=dict)
+    documents: list[SourceDocument] = field(default_factory=list)
 
     # Index caches
     _character_by_id: dict[uuid.UUID, Character] = field(init=False, default_factory=dict)
@@ -274,6 +276,15 @@ class NarrativeStateService:
                 if acq_pos <= narrative_position:
                     knowledge_by_char[k_item.character_id].append(k_item)
 
+        # 8. Query project source documents
+        doc_stmt = (
+            select(SourceDocument)
+            .where(SourceDocument.project_id == project_id)
+            .order_by(SourceDocument.file_path.asc())
+        )
+        doc_res = await self.session.execute(doc_stmt)
+        documents = list(doc_res.scalars().all())
+
         return StoryState(
             project_id=project_id,
             narrative_position=narrative_position,
@@ -286,6 +297,7 @@ class NarrativeStateService:
             locations=locations,
             relationships=relationships,
             character_knowledge=knowledge_by_char,
+            documents=documents,
         )
 
 

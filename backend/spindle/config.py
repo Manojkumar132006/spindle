@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str | None = None
     OPENAI_API_KEY: str | None = None
     LLM_API_KEY: str | None = None
-    LLM_MODEL: str = "gemini-2.0-flash"
+    LLM_MODEL: str = "gemini-3.6-flash"
     LLM_BASE_URL: str | None = None
 
     model_config = SettingsConfigDict(

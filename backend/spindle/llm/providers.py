@@ -128,7 +128,7 @@ class GeminiClient(BaseLLMClient):
     def __init__(
         self,
         api_key: str,
-        model: str = "gemini-2.0-flash",
+        model: str = "gemini-3.6-flash",
         base_url: str = "https://generativelanguage.googleapis.com/v1beta",
         timeout: float = 45.0,
         max_retries: int = 2,
@@ -138,7 +138,12 @@ class GeminiClient(BaseLLMClient):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.max_retries = max_retries
-        self.fallback_models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+        self.fallback_models = [
+            "gemini-3.6-flash",
+            "gemini-3.5-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest",
+        ]
         self._mock_fallback = MockLLMClient()
 
     async def _call_gemini_api(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -275,10 +280,9 @@ def get_llm_client(settings: Settings | None = None) -> BaseLLMClient:
     # 1. Google / Gemini API key
     gemini_key = getattr(cfg, "GEMINI_API_KEY", None) or getattr(cfg, "GOOGLE_API_KEY", None)
     if gemini_key:
-        model = getattr(cfg, "LLM_MODEL", None) or "gemini-2.0-flash"
+        model = getattr(cfg, "LLM_MODEL", None) or "gemini-3.6-flash"
         base_url = (
-            getattr(cfg, "LLM_BASE_URL", None)
-            or "https://generativelanguage.googleapis.com/v1beta"
+            getattr(cfg, "LLM_BASE_URL", None) or "https://generativelanguage.googleapis.com/v1beta"
         )
         return GeminiClient(api_key=gemini_key, model=model, base_url=base_url)
 

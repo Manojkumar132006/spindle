@@ -34,11 +34,29 @@ def create_director_node(llm_client: BaseLLMClient):
         user_req = state.get("user_request", "")
         pos = state.get("narrative_position", 0.0)
         mode = state.get("generation_mode", "plot_point")
+        story_state: StoryState | None = state.get("story_state")
+
+        char_names = []
+        doc_paths = []
+        if story_state:
+            char_names = [
+                f"- {c.name} ({c.role or 'character'})"
+                + (f": {c.description}" if c.description else "")
+                for c in story_state.characters
+            ]
+            doc_paths = [
+                f"- {d.file_path} ({d.document_type})"
+                for d in getattr(story_state, "documents", [])
+            ]
 
         prompt = (
             f"User Request: {user_req}\n"
             f"Target Narrative Position: {pos}\n"
             f"Requested Mode: {mode}\n\n"
+            f"Established Characters in Story:\n"
+            + ("\n".join(char_names) if char_names else "None")
+            + "\n\n"
+            "Vault Documents & Lore:\n" + ("\n".join(doc_paths) if doc_paths else "None") + "\n\n"
             "Classify the request, set the analytical scope, and determine the involved entities."
         )
 
@@ -65,6 +83,7 @@ def create_canon_analyst_node(llm_client: BaseLLMClient):
         events_summary = []
         threads_summary = []
         rules_summary = []
+        manuscript_excerpts = []
 
         if story_state:
             events_summary = [
@@ -75,10 +94,22 @@ def create_canon_analyst_node(llm_client: BaseLLMClient):
             rules_summary = [
                 f"- {r.name}: {r.description[:100]}" for r in story_state.active_world_rules[:5]
             ]
+            for d in getattr(story_state, "documents", []):
+                if d.document_type in (
+                    "scene",
+                    "chapter",
+                    "manuscript",
+                    "outline",
+                    "worldbuilding",
+                    "general",
+                ) and getattr(d, "raw_content", None):
+                    snippet = d.raw_content.strip()[:250].replace("\n", " ")
+                    manuscript_excerpts.append(f"- {d.file_path}: {snippet}")
 
         prompt = (
             f"User Request: {user_req}\n"
             f"Established Events:\n" + "\n".join(events_summary or ["None"]) + "\n\n"
+            "Vault Manuscript & Notes:\n" + "\n".join(manuscript_excerpts[:6] or ["None"]) + "\n\n"
             "Open Narrative Threads:\n" + "\n".join(threads_summary or ["None"]) + "\n\n"
             "Active World Rules:\n" + "\n".join(rules_summary or ["None"]) + "\n\n"
             "Analyze active canon precedents, threads, and potential contradiction risks."
@@ -104,16 +135,22 @@ def create_character_analyst_node(llm_client: BaseLLMClient):
 
         char_profiles = []
         if story_state:
-            for char in story_state.characters[:5]:
+            for char in story_state.characters:
                 char_profiles.append(
-                    f"Name: {char.name}\nRole: {char.role}\nWound: {char.fears}\n"
-                    f"Values: {char.motivations}\nState: {char.current_state}"
+                    f"Name: {char.name}\n"
+                    f"Role: {char.role or 'N/A'}\n"
+                    f"Description: {char.description or 'N/A'}\n"
+                    f"Personality: {char.personality or 'N/A'}\n"
+                    f"Motivations: {char.motivations or 'N/A'}\n"
+                    f"Fears/Wound: {char.fears or 'N/A'}\n"
+                    f"State: {char.current_state or 'alive'}\n"
+                    f"Metadata: {char.metadata_json or {}}"
                 )
 
         prompt = (
             f"User Request: {user_req}\n"
             f"Scope: {director.get('scope_summary', '')}\n"
-            f"Characters in Universe:\n" + "\n---\n".join(char_profiles or ["None"]) + "\n\n"
+            f"Characters in Story:\n" + "\n---\n".join(char_profiles or ["None"]) + "\n\n"
             "Evaluate psychological coherence, motivation alignment, and epistemic boundaries."
         )
 
@@ -189,11 +226,17 @@ def create_plot_architect_node(llm_client: BaseLLMClient):
         user_req = state.get("user_request", "")
         pos = state.get("narrative_position", 0.0)
         mode = state.get("generation_mode", "plot_point")
+        story_state: StoryState | None = state.get("story_state")
         canon = state.get("canon_analysis", {})
         character = state.get("character_analysis", {})
         timeline = state.get("timeline_analysis", {})
         causal = state.get("causal_analysis", {})
         revision_notes = state.get("revision_notes", [])
+
+        available_chars = [c.name for c in story_state.characters] if story_state else []
+        available_docs = (
+            [d.file_path for d in getattr(story_state, "documents", [])] if story_state else []
+        )
 
         revision_text = ""
         if revision_notes:
@@ -207,12 +250,15 @@ def create_plot_architect_node(llm_client: BaseLLMClient):
             f"User Request: {user_req}\n"
             f"Narrative Position: {pos}\n"
             f"Mode: {mode}\n"
+            f"Established Story Characters: {', '.join(available_chars) if available_chars else 'None'}\n"
+            f"Vault Documents: {', '.join(available_docs) if available_docs else 'None'}\n"
             f"Canon Context: {json.dumps(canon)}\n"
             f"Character Context: {json.dumps(character)}\n"
             f"Timeline Context: {json.dumps(timeline)}\n"
             f"Causal Context: {json.dumps(causal)}\n"
             f"{revision_text}\n"
-            "Synthesize a grounded narrative proposal adhering to all constraints."
+            "Synthesize a grounded narrative proposal strictly adhering to all constraints. "
+            "Use the author's established characters and reference actual vault files (e.g. from Vault Documents) in supporting_evidence."
         )
 
         output = await llm_client.generate_structured(
