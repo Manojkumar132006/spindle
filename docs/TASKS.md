@@ -7,18 +7,18 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 1: Foundation & Infrastructure
 
 ### Task 1.1: Monorepo & Python Environment Setup
-- [ ] Initialize monorepo directory layout (`backend/`, `obsidian-plugin/`, `web/`, `docs/`).
-- [ ] Configure `backend/pyproject.toml` with `uv`, Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2.0, asyncpg, pgvector, pytest, and ruff.
-- [ ] Create `Makefile` for running linting, formatting, tests, and database migrations.
-- [ ] Create `.gitignore` covering Python, Node.js, environment variables, and build artifacts.
-- [ ] **Review Gate 1.1:** Python virtual environment activates cleanly; `uv run pytest` runs with 0 errors.
+- [x] Initialize monorepo directory layout (`backend/`, `obsidian-plugin/`, `web/`, `docs/`).
+- [x] Configure `backend/pyproject.toml` with `uv`, Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2.0, asyncpg, pgvector, pytest, and ruff.
+- [x] Create `Makefile` for running linting, formatting, tests, and database migrations.
+- [x] Create `.gitignore` covering Python, Node.js, environment variables, and build artifacts.
+- [x] **Review Gate 1.1:** Python virtual environment activates cleanly; `uv run pytest` runs with 0 errors.
 
 ### Task 1.2: Database Container & Connection Setup
-- [ ] Define `docker-compose.yml` with PostgreSQL 16 image enabled with `pgvector` extension.
-- [ ] Implement `backend/spindle/config.py` using Pydantic `BaseSettings` for environment variables.
-- [ ] Implement `backend/spindle/database.py` with SQLAlchemy 2.0 async engine and sessionmaker.
-- [ ] Initialize Alembic with async configuration (`alembic/env.py`).
-- [ ] **Review Gate 1.2:** Database starts in Docker, test connection succeeds, and pgvector extension is verified.
+- [x] Define `docker-compose.yml` with PostgreSQL 16 image enabled with `pgvector` extension.
+- [x] Implement `backend/spindle/config.py` using Pydantic `BaseSettings` for environment variables.
+- [x] Implement `backend/spindle/database.py` with SQLAlchemy 2.0 async engine and sessionmaker.
+- [x] Initialize Alembic with async configuration (`alembic/env.py`).
+- [x] **Review Gate 1.2:** Database starts in Docker, test connection succeeds, and pgvector extension is verified.
 
 ### Task 1.3: Core Relational Data Models & Initial Migration
 - [ ] Implement base model and mixins (`UUIDBaseModel`, `TimestampMixin`).

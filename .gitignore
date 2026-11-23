@@ -1,6 +1,12 @@
 # Operating System
 .DS_Store
 Thumbs.db
+desktop.ini
+ehthumbs.db
+ehthumbs_vista.db
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
 
 # Python & Virtual Environments
 __pycache__/
@@ -22,15 +28,18 @@ lib/
 lib64/
 parts/
 sdist/
-var/
 wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.pytype/
 .coverage
 htmlcov/
+*.log
+logs/
 
 # Node.js & Web & Obsidian Plugin
 node_modules/
@@ -41,17 +50,47 @@ yarn-error.log*
 .next/
 out/
 obsidian-plugin/main.js
+.turbo/
+.vercel/
 
-# Environment & Local Secrets
+# Environment, Local Secrets & API Keys
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 *.local
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+credentials.json
+client_secrets.json
+service-account*.json
 
-# Database
+# Database & SQLite Cache
 *.sqlite3
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
 pgdata/
+
+# Author Data & Local Story Vaults (Privacy Protection)
+# Protect local fiction manuscripts, test vaults, and private notes
+vaults/
+*_vault/
+*vault*/
+manuscripts/
+drafts/
+sandbox/
+.obsidian/
+# Explicitly preserve tracked test fixtures
+!backend/tests/fixtures/
 
 # IDE & Editor
 .vscode/
@@ -59,4 +98,3 @@ pgdata/
 *.swp
 *.swo
 *~
-
