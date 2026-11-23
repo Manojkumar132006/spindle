@@ -146,19 +146,19 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 5: Suggestion Review, Approval & Canon Commitment
 
 ### Task 5.1: Suggestion Lifecycle Management
-- [ ] Implement state machine: `GENERATED` -> `VALIDATING` -> `VALIDATED/REJECTED` -> `PENDING_AUTHOR_APPROVAL` -> `APPROVED/REJECTED/EDITED` -> `COMMITTED`.
-- [ ] Implement endpoints:
-  - [ ] `POST /api/v1/suggestions/{id}/approve`
-  - [ ] `POST /api/v1/suggestions/{id}/reject` (with mandatory reason)
-  - [ ] `PUT /api/v1/suggestions/{id}/edit`
-  - [ ] `POST /api/v1/suggestions/{id}/commit`
-- [ ] **Review Gate 5.1:** Tests verify approval lifecycle and guard against unapproved canon modifications.
+- [x] Implement state machine: `GENERATED` -> `VALIDATING` -> `VALIDATED/REJECTED` -> `PENDING_AUTHOR_APPROVAL` -> `APPROVED/REJECTED/EDITED` -> `COMMITTED`.
+- [x] Implement endpoints:
+  - [x] `POST /api/v1/suggestions/{id}/approve`
+  - [x] `POST /api/v1/suggestions/{id}/reject` (with mandatory reason)
+  - [x] `PUT /api/v1/suggestions/{id}/edit`
+  - [x] `POST /api/v1/suggestions/{id}/commit`
+- [x] **Review Gate 5.1:** Tests verify approval lifecycle and guard against unapproved canon modifications.
 
 ### Task 5.2: Non-Destructive Canon Commit Service
-- [ ] Implement commit service: writes approved suggestion as a new markdown document or structured insertion artifact.
-- [ ] Maintain audit log linking committed document to original suggestion and author edits.
-- [ ] Update narrative state database with confirmed canon entities.
-- [ ] **Review Gate 5.2:** Tests confirm existing files remain untouched while new story files are cleanly integrated into the indexed narrative state.
+- [x] Implement commit service: writes approved suggestion as a new markdown document or structured insertion artifact.
+- [x] Maintain audit log linking committed document to original suggestion and author edits.
+- [x] Update narrative state database with confirmed canon entities.
+- [x] **Review Gate 5.2:** Tests confirm existing files remain untouched while new story files are cleanly integrated into the indexed narrative state.
 
 ---
 
