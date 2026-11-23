@@ -1,9 +1,10 @@
 """Narrative generation endpoints driving the LangGraph multi-agent workflow."""
 
+import logging
 import uuid
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +18,8 @@ from spindle.llm.providers import get_llm_client
 from spindle.models.base import ApprovalStatus, SuggestionType
 from spindle.models.project import Project
 from spindle.models.suggestion import Suggestion
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/generate", tags=["Generation"])
 
@@ -95,7 +98,15 @@ async def _execute_generation(
         "revision_notes": [],
     }
 
-    final_state = await graph.ainvoke(initial_state)
+    try:
+        final_state = await graph.ainvoke(initial_state)
+    except Exception as e:
+        logger.error("Narrative generation graph execution failed: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Narrative generation engine error: {str(e)}",
+        ) from e
+
     suggestion_data = final_state.get("final_suggestion", {})
 
     # 3. Persist the generated Suggestion into database
