@@ -21,17 +21,17 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 - [x] **Review Gate 1.2:** Database starts in Docker, test connection succeeds, and pgvector extension is verified.
 
 ### Task 1.3: Core Relational Data Models & Initial Migration
-- [ ] Implement base model and mixins (`UUIDBaseModel`, `TimestampMixin`).
-- [ ] Implement models in `backend/spindle/models/`:
-  - [ ] `project.py`: Project
-  - [ ] `document.py`: SourceDocument, DocumentExcerpt
-  - [ ] `entity.py`: Character, Location, WorldRule, Relationship
-  - [ ] `event.py`: Event, NarrativeThread
-  - [ ] `knowledge.py`: CharacterKnowledge
-  - [ ] `constraint.py`: Constraint
-  - [ ] `suggestion.py`: Suggestion, SuggestionRevision, NarrativeBranch
-- [ ] Generate and apply baseline Alembic migration script.
-- [ ] **Review Gate 1.3:** Migrations apply cleanly to PostgreSQL; test fixtures can insert and query each model.
+- [x] Implement base model and mixins (`UUIDBaseModel`, `TimestampMixin`).
+- [x] Implement models in `backend/spindle/models/`:
+  - [x] `project.py`: Project
+  - [x] `document.py`: SourceDocument, DocumentExcerpt
+  - [x] `entity.py`: Character, Location, WorldRule, Relationship
+  - [x] `event.py`: Event, NarrativeThread
+  - [x] `knowledge.py`: CharacterKnowledge
+  - [x] `constraint.py`: Constraint
+  - [x] `suggestion.py`: Suggestion, SuggestionRevision, NarrativeBranch
+- [x] Generate and apply baseline Alembic migration script.
+- [x] **Review Gate 1.3:** Migrations apply cleanly to PostgreSQL; test fixtures can insert and query each model.
 
 ### Task 1.4: FastAPI Application Foundation & Health Endpoint
 - [x] Implement FastAPI application factory in `backend/spindle/api/app.py`.
