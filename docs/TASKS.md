@@ -45,31 +45,34 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 2: Story Ingestion & Provenance Pipeline
 
 ### Task 2.1: Markdown & Frontmatter Parser
-- [ ] Implement `backend/spindle/ingestion/parser.py` using `python-frontmatter` / AST parser.
-- [ ] Extract YAML frontmatter properties (`type`, `role`, `when`, `order`, `summary`, etc.).
-- [ ] Implement `wikilinks.py` to extract Obsidian links (`[[Target]]`, `[[Target|Alias]]`).
-- [ ] Implement Markdown section chunking preserving heading hierarchies (`## Concept`, `## Psychology`).
-- [ ] Unit tests for parsing character, event, and scene markdown files.
-- [ ] **Review Gate 2.1:** Parser extracts structured attributes and wiki-links from sample notes with 100% test coverage.
+- [x] Implement `backend/spindle/ingestion/parser.py` using `python-frontmatter` / AST parser.
+- [x] Extract YAML frontmatter properties (`type`, `role`, `when`, `order`, `summary`, etc.).
+- [x] Implement `wikilinks.py` to extract Obsidian links (`[[Target]]`, `[[Target|Alias]]`).
+- [x] Implement Markdown section chunking preserving heading hierarchies (`## Concept`, `## Psychology`).
+- [x] Unit tests for parsing character, event, and scene markdown files.
+- [x] **Review Gate 2.1:** Parser extracts structured attributes and wiki-links from sample notes with 100% test coverage.
 
 ### Task 2.2: Content Hashing & Incremental Sync Engine
-- [ ] Implement `backend/spindle/ingestion/hasher.py` for SHA-256 calculation.
-- [ ] Implement change detection comparing vault file hashes against `SourceDocument.content_hash`.
-- [ ] Support handling updated, deleted, and renamed files.
-- [ ] **Review Gate 2.2:** Unit tests verify that unchanged files are skipped, edited files are re-indexed, and deleted files are tracked.
+- [x] Implement `backend/spindle/ingestion/hasher.py` for SHA-256 calculation.
+- [x] Implement change detection comparing vault file hashes against `SourceDocument.content_hash`.
+- [x] Support handling updated, deleted, and renamed files.
+- [x] **Review Gate 2.2:** Unit tests verify that unchanged files are skipped, edited files are re-indexed, and deleted files are tracked.
 
 ### Task 2.3: Entity Extraction & Reference Resolution
-- [ ] Implement `backend/spindle/ingestion/resolver.py` to map Obsidian note titles and aliases to stable Entity UUIDs.
-- [ ] Extract Characters, Events, Locations, and World Rules into relational models.
-- [ ] Record source provenance (source document ID, file path, line numbers/excerpts, extraction confidence).
-- [ ] Distinguish auto-extracted facts from author-confirmed facts (`canon_status`).
-- [ ] **Review Gate 2.3:** End-to-end ingestion test parses sample vault files and populates database with correct relationships and provenance.
+- [x] Implement `backend/spindle/ingestion/resolver.py` to map Obsidian note titles and aliases to stable Entity UUIDs.
+- [x] Extract Characters, Events, Locations, and World Rules into relational models.
+- [x] Record source provenance (source document ID, file path, line numbers/excerpts, extraction confidence).
+- [x] Distinguish auto-extracted facts from author-confirmed facts (`canon_status`).
+- [x] **Review Gate 2.3:** End-to-end ingestion test parses sample vault files and populates database with correct relationships and provenance.
 
-### Task 2.4: Vault Sync REST API Endpoints
-- [ ] Implement `POST /api/v1/projects/{project_id}/sync` endpoint accepting batch file payloads or triggering local directory scan.
-- [ ] Implement `GET /api/v1/projects/{project_id}/sync/status` for monitoring background sync progress.
-- [ ] Implement `GET /api/v1/projects/{project_id}/entities` for viewing extracted entities.
-- [ ] **Review Gate 2.4:** API integration tests verify vault sync payload processing and entity retrieval.
+### Task 2.4: Vault Sync & Narrative Query REST API Endpoints
+- [x] Implement concise, narrative-aligned REST routes with `X-Project-ID` header (or query param) context:
+  - [x] `POST /api/v1/vault/sync`: Accept batch file payloads or trigger vault sync.
+  - [x] `GET /api/v1/vault/status`: Monitor sync state, indexing progress, and error counts.
+  - [x] `GET /api/v1/entities`: Filter and list extracted entities (characters, events, locations, rules).
+  - [x] `GET /api/v1/story/overview`: Return high-level narrative metrics for Obsidian side panel.
+  - [x] `GET /api/v1/documents`: List indexed source files and hashes.
+- [x] **Review Gate 2.4:** API integration tests verify vault sync payload processing, status tracking, and entity retrieval.
 
 ---
 

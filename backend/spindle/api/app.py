@@ -7,6 +7,7 @@ from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from spindle.api.v1.router import api_v1_router
 from spindle.config import get_settings
 from spindle.database import verify_connection
 
@@ -71,6 +72,9 @@ def create_app() -> FastAPI:
                 "environment": settings.ENVIRONMENT,
             },
         )
+
+    # Mount API v1 routes
+    app.include_router(api_v1_router, prefix=settings.API_V1_STR)
 
     return app
 

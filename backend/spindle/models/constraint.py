@@ -71,4 +71,3 @@ class Constraint(UUIDBaseModel):
 
     # Relationships
     project: Mapped["Project"] = relationship("Project", back_populates="constraints")
-

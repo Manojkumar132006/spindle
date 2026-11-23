@@ -199,4 +199,3 @@ class Relationship(UUIDBaseModel):
         foreign_keys=[target_character_id],
         back_populates="relationships_as_target",
     )
-
