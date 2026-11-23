@@ -23,6 +23,16 @@ export interface ConstraintIssue {
   involved_entities: string[];
 }
 
+export interface DiagnosticItem {
+  rule_id?: string;
+  rule_name: string;
+  outcome: "PASS" | "FAIL" | "WARNING";
+  severity?: string;
+  message: string;
+  evidence?: string[];
+  remediation_hint?: string | null;
+}
+
 export interface ValidatorResult {
   validator_name: string;
   outcome: "PASS" | "FAIL" | "WARNING";
@@ -31,8 +41,14 @@ export interface ValidatorResult {
 
 export interface ValidationReport {
   overall_outcome: "PASS" | "FAIL" | "WARNING";
+  is_valid?: boolean;
   has_hard_failures: boolean;
+  summary?: string;
+  passed_count?: number;
+  failed_count?: number;
+  warning_count?: number;
   total_issues?: number;
+  diagnostics?: DiagnosticItem[];
   validator_results?: ValidatorResult[];
   results?: ValidatorResult[];
 }

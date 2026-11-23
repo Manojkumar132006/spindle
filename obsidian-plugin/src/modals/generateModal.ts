@@ -29,13 +29,15 @@ export class GenerateModal extends Modal {
   }
 
   onOpen(): void {
+    this.modalEl.addClass("spindle-modal-window");
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.addClass("spindle-generate-modal");
+    contentEl.addClass("spindle-modal-content");
 
-    contentEl.createEl("h2", { text: "Generate with Spindle AI" });
+    const header = contentEl.createDiv({ cls: "spindle-modal-header" });
+    header.createEl("h2", { text: "Generate with Spindle AI", cls: "spindle-modal-title" });
     contentEl.createEl("p", {
-      text: "Request context-grounded, constraint-checked narrative suggestions that integrate seamlessly into your story canon.",
+      text: "Request context-grounded, constraint-checked narrative suggestions bounded strictly by your established story canon.",
       cls: "spindle-muted",
     });
 
@@ -95,10 +97,18 @@ export class GenerateModal extends Modal {
       );
 
     // 5. Action Buttons
-    const actionsEl = contentEl.createDiv({ cls: "spindle-modal-actions" });
+    const actionsEl = contentEl.createDiv({ cls: "spindle-modal-actions-bar" });
+    const cancelBtn = actionsEl.createEl("button", {
+      text: "Cancel",
+      cls: "spindle-btn-secondary",
+    });
+    cancelBtn.onClickEvent(() => {
+      this.close();
+    });
+
     const generateBtn = actionsEl.createEl("button", {
-      text: "Generate Suggestion",
-      cls: "mod-cta spindle-action-btn",
+      text: "✨ Generate Suggestion",
+      cls: "spindle-btn-commit is-active",
     });
 
     generateBtn.onClickEvent(async () => {
@@ -122,7 +132,10 @@ export class GenerateModal extends Modal {
 
       generateBtn.disabled = true;
       generateBtn.setText("Generating with Multi-Agent Workflow...");
-      const notice = new Notice("Spindle agents analyzing canon constraints & generating proposal...", 10000);
+      const notice = new Notice(
+        "Spindle agents analyzing canon constraints & generating proposal...",
+        10000
+      );
 
       const characters = this.charactersInput
         .split(",")
@@ -146,7 +159,7 @@ export class GenerateModal extends Modal {
         }
 
         notice.hide();
-        new Notice(`Generated: ${suggestion.title}`);
+        new Notice(`✓ Generated: ${suggestion.title}`);
 
         this.onSuggestionGenerated?.(suggestion);
         this.close();
@@ -157,16 +170,8 @@ export class GenerateModal extends Modal {
         notice.hide();
         new Notice(`Generation failed: ${err.message}`);
         generateBtn.disabled = false;
-        generateBtn.setText("Generate Suggestion");
+        generateBtn.setText("✨ Generate Suggestion");
       }
-    });
-
-    const cancelBtn = actionsEl.createEl("button", {
-      text: "Cancel",
-      cls: "spindle-action-btn",
-    });
-    cancelBtn.onClickEvent(() => {
-      this.close();
     });
   }
 
