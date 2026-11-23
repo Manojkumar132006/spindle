@@ -108,8 +108,16 @@ export class GenerateModal extends Modal {
       }
 
       if (!this.plugin.settings.projectId) {
-        new Notice("No Project ID configured. Please set your Project ID in Spindle Settings.");
-        return;
+        try {
+          const overview = await this.plugin.client.getStoryOverview();
+          if (overview?.project_id) {
+            this.plugin.settings.projectId = overview.project_id;
+            await this.plugin.saveSettings();
+          }
+        } catch {
+          new Notice("No Project ID configured. Please set your Project ID in Spindle Settings.");
+          return;
+        }
       }
 
       generateBtn.disabled = true;

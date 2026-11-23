@@ -144,8 +144,16 @@ export class SpindlePlugin extends Plugin {
    */
   async syncVault(): Promise<void> {
     if (!this.settings.projectId) {
-      new Notice("Cannot sync: No Project ID configured. Open Spindle Settings.");
-      return;
+      try {
+        const overview = await this.client.getStoryOverview();
+        if (overview?.project_id) {
+          this.settings.projectId = overview.project_id;
+          await this.saveSettings();
+        }
+      } catch {
+        new Notice("Cannot sync: No Project ID configured. Open Spindle Settings.");
+        return;
+      }
     }
 
     const notice = new Notice("Scanning vault files for Spindle sync...", 8000);

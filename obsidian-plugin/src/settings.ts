@@ -74,16 +74,40 @@ export class SpindleSettingTab extends PluginSettingTab {
     connectionStatusEl.setText("Click 'Test Connection' to verify backend link.");
 
     // Project ID
+    let projectInputEl: any;
     new Setting(containerEl)
       .setName("Project ID")
-      .setDesc("UUID of the active story project. All queries and sync events use this context.")
-      .addText((text) =>
+      .setDesc("UUID of the active story project. Leave blank or click 'Auto-Detect' to use current project.")
+      .addText((text) => {
+        projectInputEl = text;
         text
           .setPlaceholder("e.g. 123e4567-e89b-12d3-a456-426614174000")
           .setValue(this.plugin.settings.projectId)
           .onChange(async (value) => {
             this.plugin.settings.projectId = value.trim();
             await this.plugin.saveSettings();
+          });
+      })
+      .addButton((button) =>
+        button
+          .setButtonText("Auto-Detect Project")
+          .onClick(async () => {
+            button.setDisabled(true);
+            try {
+              const overview = await this.plugin.client.getStoryOverview();
+              if (overview?.project_id) {
+                this.plugin.settings.projectId = overview.project_id;
+                await this.plugin.saveSettings();
+                projectInputEl.setValue(overview.project_id);
+                new Notice(
+                  `Auto-detected project: ${overview.project_name || overview.project_id}`
+                );
+              }
+            } catch (err: any) {
+              new Notice(`Failed to auto-detect project: ${err.message}`);
+            } finally {
+              button.setDisabled(false);
+            }
           })
       );
 

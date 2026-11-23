@@ -41,8 +41,16 @@ export class StoryOverviewView extends ItemView {
 
   async refreshData(): Promise<void> {
     if (!this.plugin.settings.projectId) {
-      this.render();
-      return;
+      try {
+        const defaultOverview = await this.plugin.client.getStoryOverview();
+        if (defaultOverview?.project_id) {
+          this.plugin.settings.projectId = defaultOverview.project_id;
+          await this.plugin.saveSettings();
+        }
+      } catch {
+        this.render();
+        return;
+      }
     }
 
     this.isLoading = true;
