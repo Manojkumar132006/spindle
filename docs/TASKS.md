@@ -105,39 +105,41 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 ## Stage 4: Multi-Agent Workflow with LangGraph
 
 ### Task 4.1: Provider-Independent LLM Interface & Prompt Registry
-- [ ] Implement `backend/spindle/llm/client.py` abstract interface.
-- [ ] Implement `MockLLMClient` with deterministic rule-based output for automated tests.
-- [ ] Implement production LLM client (supporting OpenAI, Anthropic, Gemini / LiteLLM) with retry and timeout policies.
-- [ ] Centralize prompt templates in `backend/spindle/llm/prompts.py`.
-- [ ] **Review Gate 4.1:** Test suite runs against `MockLLMClient` with zero network dependency.
+- [x] Implement `backend/spindle/llm/client.py` abstract interface.
+- [x] Implement `MockLLMClient` with deterministic rule-based output for automated tests.
+- [x] Implement production LLM client (supporting OpenAI, Anthropic, Gemini / LiteLLM) with retry and timeout policies.
+- [x] Centralize prompt templates in `backend/spindle/llm/prompts.py`.
+- [x] **Review Gate 4.1:** Test suite runs against `MockLLMClient` with zero network dependency.
 
 ### Task 4.2: LangGraph State & Agent Node Implementation
-- [ ] Define `GraphState` TypedDict in `backend/spindle/agents/state.py`.
-- [ ] Implement individual agent nodes:
-  - [ ] `NarrativeDirectorNode`: Request classification & scope.
-  - [ ] `CanonAnalystNode`: Canon retrieval & thread identification.
-  - [ ] `CharacterAnalystNode`: Motives, relationships & behavioral plausibility.
-  - [ ] `TimelineAnalystNode`: Temporal ordering & presence checks.
-  - [ ] `CausalReasonerNode`: Causal dependencies & consequences.
-  - [ ] `PlotArchitectNode`: Suggestion generation (Plot point, Side story, Continuity).
-  - [ ] `ConstraintValidatorNode`: Invokes Constraint Engine.
-  - [ ] `NarrativeCriticNode`: Originality, plausibility, and value scoring.
-  - [ ] `ResultSynthesizerNode`: Compiles final suggestion payload.
-- [ ] **Review Gate 4.2:** Each node is independently unit tested with mocked state inputs.
+- [x] Define `GraphState` TypedDict in `backend/spindle/agents/state.py`.
+- [x] Implement individual agent nodes:
+  - [x] `NarrativeDirectorNode`: Request classification & scope.
+  - [x] `CanonAnalystNode`: Canon retrieval & thread identification.
+  - [x] `CharacterAnalystNode`: Motives, relationships & behavioral plausibility.
+  - [x] `TimelineAnalystNode`: Temporal ordering & presence checks.
+  - [x] `CausalReasonerNode`: Causal dependencies & consequences.
+  - [x] `PlotArchitectNode`: Suggestion generation (Plot point, Side story, Continuity).
+  - [x] `ConstraintValidatorNode`: Invokes Constraint Engine.
+  - [x] `NarrativeCriticNode`: Originality, plausibility, and value scoring.
+  - [x] `ResultSynthesizerNode`: Compiles final suggestion payload.
+- [x] **Review Gate 4.2:** Each node is independently unit tested with mocked state inputs.
 
 ### Task 4.3: Graph Compilation, Routing & Bounded Revisions
-- [ ] Assemble LangGraph workflow in `backend/spindle/agents/graph.py`.
-- [ ] Implement parallel fan-out for Character, Timeline, and Causal analysis.
-- [ ] Implement conditional router: if hard constraint fails, route back to Plot Architect with revision hints (max 2 iterations).
-- [ ] Ensure non-destructive output and human-approval interrupt state.
-- [ ] **Review Gate 4.3:** End-to-end graph test verifies successful plot generation and constraint-triggered revision loop.
+- [x] Assemble LangGraph workflow in `backend/spindle/agents/graph.py`.
+- [x] Implement parallel fan-out for Character, Timeline, and Causal analysis.
+- [x] Implement conditional router: if hard constraint fails, route back to Plot Architect with revision hints (max 2 iterations).
+- [x] Ensure non-destructive output and human-approval interrupt state.
+- [x] **Review Gate 4.3:** End-to-end graph test verifies successful plot generation and constraint-triggered revision loop.
 
 ### Task 4.4: Narrative Generation REST API Endpoints
-- [ ] Implement `POST /api/v1/projects/{project_id}/generate/plot-point`
-- [ ] Implement `POST /api/v1/projects/{project_id}/generate/side-story`
-- [ ] Implement `POST /api/v1/projects/{project_id}/generate/continuity-analysis`
-- [ ] Implement `GET /api/v1/suggestions/{suggestion_id}`
-- [ ] **Review Gate 4.4:** API integration tests verify asynchronous generation and retrieval of suggestions with validation reports.
+- [x] Implement concise generation routes with `X-Project-ID` header (or query param) context:
+  - [x] `POST /api/v1/generate/plot-point`: Generate contextually grounded, constraint-checked plot points.
+  - [x] `POST /api/v1/generate/side-story`: Generate canon-consistent side stories with beginning, development, and resolution.
+  - [x] `POST /api/v1/generate/continuity-analysis`: Check narrative state for potential continuity contradictions.
+  - [x] `GET /api/v1/suggestions/{suggestion_id}`: Retrieve suggestion details, assumptions, evidence, and validation reports.
+  - [x] `GET /api/v1/suggestions`: List suggestions filtered by `approval_status` or `suggestion_type`.
+- [x] **Review Gate 4.4:** API integration tests verify asynchronous generation and retrieval of suggestions with validation reports.
 
 ---
 
