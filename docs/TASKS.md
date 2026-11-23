@@ -34,11 +34,11 @@ This document outlines the breakdown of tasks across all stages of the Spindle M
 - [ ] **Review Gate 1.3:** Migrations apply cleanly to PostgreSQL; test fixtures can insert and query each model.
 
 ### Task 1.4: FastAPI Application Foundation & Health Endpoint
-- [ ] Implement FastAPI application factory in `backend/spindle/api/app.py`.
-- [ ] Add CORS middleware and global exception handling.
-- [ ] Implement `/health` and `/api/v1/health` endpoints returning database connectivity status.
-- [ ] Write integration test verifying FastAPI test client against the health endpoint.
-- [ ] **Review Gate 1.4:** `pytest backend/tests/integration/test_health.py` passes.
+- [x] Implement FastAPI application factory in `backend/spindle/api/app.py`.
+- [x] Add CORS middleware and global exception handling.
+- [x] Implement `/health` and `/api/v1/health` endpoints returning database connectivity status.
+- [x] Write integration test verifying FastAPI test client against the health endpoint.
+- [x] **Review Gate 1.4:** `pytest backend/tests/integration/test_health.py` passes.
 
 ---
 
