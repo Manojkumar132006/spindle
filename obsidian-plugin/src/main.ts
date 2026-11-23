@@ -165,8 +165,10 @@ export class SpindlePlugin extends Plugin {
       const syncResult = await this.client.syncVault(scanResult.files);
       notice.hide();
 
+      const indexed = syncResult.indexed_files ?? syncResult.indexed_count ?? 0;
+      const total = syncResult.total_files ?? syncResult.total_files_received ?? scanResult.files.length;
       new Notice(
-        `✓ Sync Complete! ${syncResult.indexed_count}/${syncResult.total_files_received} files indexed.`
+        `✓ Sync Complete! ${indexed}/${total} files indexed.`
       );
 
       // Refresh any active Story Overview view

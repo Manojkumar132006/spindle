@@ -4,13 +4,16 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class SyncFilePayload(BaseModel):
     """A file payload submitted for vault synchronization."""
 
-    path: str = Field(description="Relative vault file path, e.g. Characters/Elena.md")
+    path: str = Field(
+        validation_alias=AliasChoices("path", "file_path"),
+        description="Relative vault file path, e.g. Characters/Elena.md",
+    )
     content: str = Field(description="Raw markdown prose including YAML frontmatter")
 
 

@@ -76,7 +76,8 @@ export interface StoryOverview {
 }
 
 export interface SyncFileInput {
-  file_path: string;
+  path: string;
+  file_path?: string;
   content: string;
   content_hash?: string;
   document_type?: string;
@@ -84,8 +85,10 @@ export interface SyncFileInput {
 
 export interface VaultSyncResponse {
   status: string;
-  total_files_received: number;
-  indexed_count: number;
+  total_files?: number;
+  indexed_files?: number;
+  total_files_received?: number;
+  indexed_count?: number;
   errors: string[];
 }
 

@@ -46,6 +46,7 @@ export class VaultScanner {
         const hash = await this.calculateHash(content);
 
         syncFiles.push({
+          path: file.path,
           file_path: file.path,
           content,
           content_hash: hash,
