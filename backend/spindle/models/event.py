@@ -132,3 +132,4 @@ class NarrativeThread(UUIDBaseModel):
         "Event",
         foreign_keys=[resolution_event_id],
     )
+

@@ -159,3 +159,4 @@ class SuggestionRevision(UUIDBaseModel):
 
     # Relationships
     suggestion: Mapped["Suggestion"] = relationship("Suggestion", back_populates="revisions")
+
