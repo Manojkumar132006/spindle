@@ -6,6 +6,13 @@ from httpx import ASGITransport, AsyncClient
 from spindle.api.app import app
 from spindle.database import get_db_session
 from spindle.models.project import Project
+from tests.unit.test_agents import FakeTestLLMClient
+
+
+@pytest.fixture(autouse=True)
+def mock_llm_for_integration(monkeypatch):
+    """Stub LLM client for offline integration tests."""
+    monkeypatch.setattr("spindle.api.v1.generate.get_llm_client", lambda: FakeTestLLMClient())
 
 
 @pytest.fixture

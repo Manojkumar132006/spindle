@@ -9,7 +9,6 @@ from pydantic import BaseModel
 
 from spindle.config import Settings, get_settings
 from spindle.llm.client import BaseLLMClient
-from spindle.llm.mock import MockLLMClient
 
 logger = logging.getLogger(__name__)
 
@@ -121,8 +120,7 @@ class OpenAICompatibleClient(BaseLLMClient):
 class GeminiClient(BaseLLMClient):
     """Native Google Gemini client communicating with Google's Generative Language REST API.
 
-    Features automatic model fallback (e.g. gemini-2.0-flash -> gemini-1.5-flash) and graceful
-    mock delegation on authentication or network errors to preserve author workflow continuity.
+    Features automatic model fallback (e.g. gemini-3.6-flash -> gemini-3.5-flash) across active versions.
     """
 
     def __init__(
@@ -144,7 +142,6 @@ class GeminiClient(BaseLLMClient):
             "gemini-3.7-flash",
             "gemini-flash-latest",
         ]
-        self._mock_fallback = MockLLMClient()
 
     async def _call_gemini_api(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute request to Google Generative Language REST API with model fallback."""
@@ -204,26 +201,13 @@ class GeminiClient(BaseLLMClient):
         if system_prompt:
             payload["systemInstruction"] = {"parts": [{"text": system_prompt}]}
 
-        try:
-            data = await self._call_gemini_api(payload)
-            candidates = data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if parts and "text" in parts[0]:
-                    return parts[0]["text"].strip()
-            raise ValueError(f"Gemini returned empty candidate content: {data}")
-        except Exception as e:
-            logger.warning(
-                "Gemini API generate failed (%s: %s). Falling back to mock generator.",
-                type(e).__name__,
-                e,
-            )
-            return await self._mock_fallback.generate(
-                prompt=prompt,
-                system_prompt=system_prompt,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
+        data = await self._call_gemini_api(payload)
+        candidates = data.get("candidates", [])
+        if candidates:
+            parts = candidates[0].get("content", {}).get("parts", [])
+            if parts and "text" in parts[0]:
+                return parts[0]["text"].strip()
+        raise ValueError(f"Gemini API returned empty candidate content: {data}")
 
     async def generate_structured(
         self,
@@ -246,36 +230,20 @@ class GeminiClient(BaseLLMClient):
             },
         }
 
-        try:
-            data = await self._call_gemini_api(payload)
-            candidates = data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if parts and "text" in parts[0]:
-                    raw_text = parts[0]["text"]
-                    cleaned_text = _clean_json_text(raw_text)
-                    return response_model.model_validate_json(cleaned_text)
-            raise ValueError(f"Gemini returned empty candidate content: {data}")
-        except Exception as e:
-            logger.warning(
-                "Gemini API generate_structured failed (%s: %s). Falling back to mock generator.",
-                type(e).__name__,
-                e,
-            )
-            return await self._mock_fallback.generate_structured(
-                prompt=prompt,
-                response_model=response_model,
-                system_prompt=system_prompt,
-                temperature=temperature,
-            )
+        data = await self._call_gemini_api(payload)
+        candidates = data.get("candidates", [])
+        if candidates:
+            parts = candidates[0].get("content", {}).get("parts", [])
+            if parts and "text" in parts[0]:
+                raw_text = parts[0]["text"]
+                cleaned_text = _clean_json_text(raw_text)
+                return response_model.model_validate_json(cleaned_text)
+        raise ValueError(f"Gemini API returned empty candidate content: {data}")
 
 
 def get_llm_client(settings: Settings | None = None) -> BaseLLMClient:
     """Factory returning active LLM client based on environment and credentials."""
     cfg = settings or get_settings()
-
-    if cfg.is_testing:
-        return MockLLMClient()
 
     # 1. Google / Gemini API key
     gemini_key = getattr(cfg, "GEMINI_API_KEY", None) or getattr(cfg, "GOOGLE_API_KEY", None)
@@ -293,5 +261,6 @@ def get_llm_client(settings: Settings | None = None) -> BaseLLMClient:
         model = getattr(cfg, "LLM_MODEL", None) or "gpt-4o-mini"
         return OpenAICompatibleClient(api_key=api_key, base_url=base_url, model=model)
 
-    # 3. Default to MockLLMClient if no provider credential configured
-    return MockLLMClient()
+    raise RuntimeError(
+        "No LLM API key configured. Please set GEMINI_API_KEY (or OPENAI_API_KEY) in backend/.env to run live narrative generation."
+    )

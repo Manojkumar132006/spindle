@@ -14,17 +14,109 @@ from spindle.core.constraints.report import (
     ValidationOutcome,
 )
 from spindle.core.state_service import StoryState
-from spindle.llm.mock import MockLLMClient
+from spindle.llm.client import BaseLLMClient
 from spindle.models.base import ConstraintSeverity
 from spindle.models.entity import Character
 from spindle.models.event import Event
+
+
+class FakeTestLLMClient(BaseLLMClient):
+    """Test-local stub for unit testing LangGraph workflow state transitions without network."""
+
+    async def generate(
+        self,
+        prompt: str,
+        system_prompt: str | None = None,
+        temperature: float = 0.7,
+        max_tokens: int = 2048,
+    ) -> str:
+        return "Test LLM completion."
+
+    async def generate_structured(
+        self,
+        prompt: str,
+        response_model: type[Any],
+        system_prompt: str | None = None,
+        temperature: float = 0.2,
+    ) -> Any:
+        name = response_model.__name__.lower()
+        if "director" in name:
+            mode = "plot_point"
+            if "side_story" in prompt:
+                mode = "side_story"
+            elif "continuity_analysis" in prompt:
+                mode = "continuity_analysis"
+            data = {
+                "generation_mode": mode,
+                "scope_summary": "Test scope",
+                "required_analyses": ["Analysis A"],
+                "target_characters": ["Elena Vareth"],
+                "target_events": ["Discovery of the Loophole"],
+            }
+        elif "canon" in name:
+            data = {
+                "established_precedents": ["Precedent A"],
+                "unresolved_threads": ["Thread 1"],
+                "active_canon_facts": ["Fact 1"],
+                "contradiction_risks": [],
+            }
+        elif "character" in name:
+            data = {
+                "motivation_alignment": "High",
+                "behavioral_plausibility_score": 8.5,
+                "relationship_dynamics": [],
+                "knowledge_boundaries": [],
+                "potential_character_growth": "Positive",
+            }
+        elif "timeline" in name:
+            data = {
+                "chronological_placement": "Chapter 1",
+                "temporal_ordering_valid": True,
+                "character_presence_confirmed": True,
+                "dependencies_satisfied": True,
+                "timeline_notes": "None",
+            }
+        elif "causal" in name:
+            data = {
+                "prerequisites": ["Discovery of the Loophole"],
+                "immediate_consequences": ["Outcome A"],
+                "downstream_implications": ["Impact B"],
+                "causal_plausibility_score": 9.0,
+            }
+        elif "plot" in name or "proposal" in name:
+            data = {
+                "title": "A Test Plot Proposal",
+                "premise": "Elena acts on the discovery.",
+                "narrative_purpose": "Advance the test plot.",
+                "involved_characters": ["Elena Vareth"],
+                "preconditions": [],
+                "causal_dependencies": ["Discovery of the Loophole"],
+                "expected_consequences": [],
+                "supporting_evidence": ["Examples/The Loophole.md"],
+                "assumptions": [],
+                "detailed_content": {
+                    "act": 1,
+                    "scene_beats": ["Elena enters", "Elena discovers", "Elena exits"],
+                },
+            }
+        elif "critic" in name:
+            data = {
+                "originality_score": 8.0,
+                "narrative_plausibility_score": 8.5,
+                "thematic_relevance_score": 9.0,
+                "identified_weaknesses": [],
+                "overall_verdict": "Solid test execution.",
+            }
+        else:
+            data = {}
+        return response_model.model_validate(data)
 
 
 @pytest.mark.asyncio
 async def test_langgraph_full_workflow_execution():
     """Test full 8-agent LangGraph execution from request to result synthesis."""
     project_id = uuid.uuid4()
-    mock_llm = MockLLMClient()
+    test_llm = FakeTestLLMClient()
 
     # Create dummy story state
     char = Character(
@@ -47,7 +139,7 @@ async def test_langgraph_full_workflow_execution():
     )
 
     engine = ConstraintEngine()
-    graph = build_narrative_graph(llm_client=mock_llm, constraint_engine=engine)
+    graph = build_narrative_graph(llm_client=test_llm, constraint_engine=engine)
 
     initial_state: GraphState = {
         "project_id": str(project_id),
@@ -133,13 +225,13 @@ class AlwaysFailValidator(BaseConstraintValidator):
 async def test_langgraph_bounded_revision_loop():
     """Test conditional routing: hard failure triggers revision back to Plot Architect and terminates."""
     project_id = uuid.uuid4()
-    mock_llm = MockLLMClient()
+    test_llm = FakeTestLLMClient()
 
     # Constraint engine with persistent failure to test bound (max 2 revisions)
     failing_validator = AlwaysFailValidator(fail_count=10)
     engine = ConstraintEngine(validators=[failing_validator])
 
-    graph = build_narrative_graph(llm_client=mock_llm, constraint_engine=engine)
+    graph = build_narrative_graph(llm_client=test_llm, constraint_engine=engine)
 
     story_state = StoryState(project_id=project_id, narrative_position=5.0)
 
