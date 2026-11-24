@@ -53,6 +53,8 @@ test("VaultScaffolder - scaffolds folders, templates, series bible, and configs 
     fileContents.get(".obsidian/plugins/templater-obsidian/data.json") || "{}"
   );
   assert.equal(templaterJson.templates_folder, "Templates");
+  assert.equal(templaterJson.trigger_on_file_creation_mode, "folder");
+  assert.ok(templaterJson.folder_templates.length > 0);
 
   // Verify community plugins content
   const pluginsJson = JSON.parse(

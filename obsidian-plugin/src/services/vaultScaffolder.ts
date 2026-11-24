@@ -4,7 +4,7 @@
  * Series Bible dashboard, and plugin configurations (Templater, Dataview, Longform, Spindle).
  */
 
-import { App } from "obsidian";
+import type { App, TFile } from "obsidian";
 
 export interface ScaffoldResult {
   foldersCreated: string[];
@@ -12,6 +12,18 @@ export interface ScaffoldResult {
   configsUpdated: string[];
   skipped: string[];
 }
+
+export const DEFAULT_FOLDER_TEMPLATES = [
+  { folder: "Characters", template: "Templates/Character.md" },
+  { folder: "Manuscript", template: "Templates/Scene.md" },
+  { folder: "Manuscript/Side Stories", template: "Templates/Scene.md" },
+  { folder: "Writing Log", template: "Templates/Writing Log.md" },
+  { folder: "Worldbuilding/Locations", template: "Templates/Location.md" },
+  { folder: "Worldbuilding/Factions", template: "Templates/Faction.md" },
+  { folder: "Worldbuilding/Magic", template: "Templates/Magic.md" },
+  { folder: "Worldbuilding/Peoples and Nations", template: "Templates/People or Nation.md" },
+  { folder: "Plot/Timeline", template: "Templates/Event.md" },
+];
 
 export const SCAFFOLD_FOLDERS: string[] = [
   "Manuscript",
@@ -407,16 +419,25 @@ export class VaultScaffolder {
       }
 
       let templaterConfig: Record<string, any> = {
+        data_version: 2,
+        command_timeout: 5,
         templates_folder: "Templates",
+        trigger_on_file_creation_mode: "folder",
+        folder_templates: DEFAULT_FOLDER_TEMPLATES,
         syntax_highlighting: true,
-        enabled_templates: [],
+        enabled_templates_hotkeys: [],
       };
 
       if (await this.app.vault.adapter.exists(templaterConfigPath)) {
         try {
           const raw = await this.app.vault.adapter.read(templaterConfigPath);
           const parsed = JSON.parse(raw);
-          templaterConfig = { ...parsed, templates_folder: "Templates" };
+          templaterConfig = {
+            ...parsed,
+            templates_folder: "Templates",
+            trigger_on_file_creation_mode: "folder",
+            folder_templates: DEFAULT_FOLDER_TEMPLATES,
+          };
         } catch {
           // Use default
         }
@@ -432,5 +453,48 @@ export class VaultScaffolder {
     }
 
     return result;
+  }
+
+  /**
+   * Directly creates and opens a templated note in the vault, expanding template placeholders.
+   */
+  public async createTemplatedNote(
+    folder: string,
+    title: string,
+    templateKey: string
+  ): Promise<TFile | null> {
+    const cleanTitle = title.replace(/[\\/*?:"<>|]/g, "").trim();
+    if (!cleanTitle) return null;
+
+    // Ensure target folder exists
+    if (!(await this.app.vault.adapter.exists(folder))) {
+      try {
+        await this.app.vault.createFolder(folder);
+      } catch {
+        await (this.app.vault.adapter as any).mkdir?.(folder);
+      }
+    }
+
+    const filePath = `${folder}/${cleanTitle}.md`;
+    if (await this.app.vault.adapter.exists(filePath)) {
+      const existing = this.app.vault.getAbstractFileByPath(filePath);
+      return existing && "extension" in existing ? (existing as TFile) : null;
+    }
+
+    // Retrieve template text
+    let templateContent = TEMPLATES[templateKey] || "";
+    if (!templateContent && (await this.app.vault.adapter.exists(templateKey))) {
+      templateContent = await this.app.vault.adapter.read(templateKey);
+    }
+
+    const nowIso = new Date().toISOString().split("T")[0];
+    const expanded = templateContent
+      .replace(/<%\s*tp\.file\.title\s*%>/g, cleanTitle)
+      .replace(/<%\s*tp\.file\.creation_date\([^)]*\)\s*%>/g, nowIso)
+      .replace(/<%\s*tp\.frontmatter\.[a-zA-Z0-9_-]+\s*%>/g, "")
+      .replace(/<%\s*[^%]+\s*%>/g, "");
+
+    const newFile = await this.app.vault.create(filePath, expanded);
+    return newFile;
   }
 }
