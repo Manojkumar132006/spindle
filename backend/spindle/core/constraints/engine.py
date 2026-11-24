@@ -4,6 +4,7 @@ from typing import Any
 
 from spindle.core.constraints.base import BaseConstraintValidator
 from spindle.core.constraints.deterministic.chronology import ChronologyValidator
+from spindle.core.constraints.deterministic.entity_existence import EntityExistenceValidator
 from spindle.core.constraints.deterministic.epistemic import EpistemicValidator
 from spindle.core.constraints.deterministic.life_status import LifeStatusValidator
 from spindle.core.constraints.deterministic.world_rule import WorldRuleValidator
@@ -25,6 +26,7 @@ class ConstraintEngine:
         else:
             # Register standard deterministic validators
             self.validators = [
+                EntityExistenceValidator(),
                 ChronologyValidator(),
                 LifeStatusValidator(),
                 EpistemicValidator(),

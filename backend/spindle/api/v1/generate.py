@@ -273,16 +273,18 @@ async def explore_branches(
         for d in getattr(story_state, "documents", [])
     ]
 
-    focus_chars = payload.target_characters or [c.name for c in story_state.characters[:3]]
+    focus_chars = payload.target_characters or [c.name for c in story_state.characters]
     prompt = (
         f"Target Narrative Position: {payload.narrative_position}\n"
-        f"Focus Characters: {', '.join(focus_chars) if focus_chars else 'Protagonist and Antagonist'}\n"
+        f"Focus Characters: {', '.join(focus_chars) if focus_chars else 'None explicitly targeted'}\n"
         f"Established Characters in Story:\n" + ("\n".join(char_summaries) if char_summaries else "None") + "\n\n"
         "Established Events:\n" + ("\n".join(events_summary) if events_summary else "None") + "\n\n"
         "Vault Documents:\n" + ("\n".join(docs_summary) if docs_summary else "None") + "\n\n"
         f"Synthesize {payload.branch_count} distinct, divergent narrative branches that could unfold from this narrative position. "
         "Each branch must represent a genuinely different narrative trajectory (e.g. Tactical Escalation, Covert Investigation, Alliance/Diplomacy, Retreat/Regroup). "
-        "Strictly incorporate the established characters and reference actual vault files in supporting_evidence."
+        "CRITICAL ENTITY CONSTRAINT: In `involved_characters`, you MUST ONLY include characters explicitly listed under Established Characters in Story. "
+        "Do NOT invent, name, or hallucinate any new characters. If background extras are needed for scene beats, refer to them ONLY by generic descriptive title (e.g. 'the conductor', 'station sentry'). "
+        "Reference actual vault markdown files in supporting_evidence."
     )
 
     llm_client = get_llm_client()
@@ -294,7 +296,8 @@ async def explore_branches(
             response_model=BranchExplorerOutput,
             system_prompt=(
                 "You are an expert Story Architect. Generate distinct divergent narrative branches "
-                "based strictly on the author's story canon and character motivations."
+                "based strictly on the author's story canon and character motivations. "
+                "You MUST NOT invent, hallucinate, or name any new characters. You must exclusively use the author's established characters."
             ),
         )
     except Exception as e:
@@ -365,3 +368,4 @@ async def explore_branches(
         )
 
     return results
+

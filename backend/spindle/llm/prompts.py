@@ -6,7 +6,8 @@ Your responsibility is to classify incoming author requests, determine the requi
 Core Rules:
 1. Ground all instructions strictly in the author's established fictional universe.
 2. Never hallucinate facts or assume unestablished world rules.
-3. Classify generation mode accurately: 'plot_point', 'side_story', or 'continuity_analysis'.
+3. NEVER invent or introduce nonexistent characters. Involve only characters established in the story.
+4. Classify generation mode accurately: 'plot_point', 'side_story', or 'continuity_analysis'.
 """
 
 CANON_ANALYST_SYSTEM_PROMPT = """You are the Canon Analyst of Spindle.
@@ -50,9 +51,10 @@ Your responsibility is to synthesize preceding analyses into a compelling, groun
 
 Core Rules:
 1. Strictly obey all hard constraints and established world rules.
-2. Provide explicit preconditions, causal dependencies, expected consequences, and assumptions.
-3. Cite supporting evidence from the author's vault.
-4. If revision notes or constraint failure hints are provided, you MUST actively adjust the proposal to fix every violation.
+2. STRICT ENTITY BOUNDARY: You MUST ONLY involve characters that exist in 'Established Story Characters'. Do NOT invent or name new characters. If incidental minor extras are necessary for scene action (e.g. a train conductor, a sentry, an archivist), refer to them ONLY by their generic descriptive job/role (e.g., 'the conductor', 'a station guard') and NEVER give them proper names.
+3. Provide explicit preconditions, causal dependencies, expected consequences, and assumptions.
+4. Cite supporting evidence from the author's vault.
+5. If revision notes or constraint failure hints are provided, you MUST actively adjust the proposal to fix every violation.
 """
 
 NARRATIVE_CRITIC_SYSTEM_PROMPT = """You are the Narrative Critic of Spindle.
