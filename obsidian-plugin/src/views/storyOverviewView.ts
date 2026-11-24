@@ -6,8 +6,10 @@
 
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
 import type { SpindlePlugin } from "../main";
+import { ExploreBranchesModal } from "../modals/exploreBranchesModal";
 import { GenerateModal } from "../modals/generateModal";
 import { SuggestionReviewModal } from "../modals/suggestionReviewModal";
+import { VaultScaffolder } from "../services/vaultScaffolder";
 import { StoryOverview, Suggestion } from "../types";
 
 export const VIEW_TYPE_STORY_OVERVIEW = "spindle-story-overview";
@@ -131,9 +133,18 @@ export class StoryOverviewView extends ItemView {
 
     // Action Buttons
     const actionsBar = container.createDiv({ cls: "spindle-overview-actions" });
+    const exploreBtn = actionsBar.createEl("button", {
+      text: "🌿 Explore Branches",
+      cls: "mod-cta spindle-action-btn",
+      title: "Discover divergent story pathways without writing a prompt",
+    });
+    exploreBtn.onClickEvent(() => {
+      new ExploreBranchesModal(this.app, this.plugin, () => this.refreshData()).open();
+    });
+
     const generateBtn = actionsBar.createEl("button", {
       text: "✨ Generate with AI",
-      cls: "mod-cta spindle-action-btn",
+      cls: "spindle-action-btn",
     });
     generateBtn.onClickEvent(() => {
       new GenerateModal(this.app, this.plugin, () => this.refreshData()).open();
@@ -152,6 +163,29 @@ export class StoryOverviewView extends ItemView {
       } finally {
         syncBtn.disabled = false;
         syncBtn.setText("🔄 Sync Vault");
+      }
+    });
+
+    const scaffoldBtn = actionsBar.createEl("button", {
+      text: "📁 Scaffold Vault",
+      cls: "spindle-action-btn",
+      title: "Create standard novel writing folders and templates",
+    });
+    scaffoldBtn.onClickEvent(async () => {
+      scaffoldBtn.disabled = true;
+      scaffoldBtn.setText("Scaffolding...");
+      try {
+        const scaffolder = new VaultScaffolder(this.app);
+        const res = await scaffolder.scaffoldAll();
+        new Notice(
+          `Scaffolded: ${res.foldersCreated.length} folders, ${res.filesCreated.length} templates & docs, ${res.configsUpdated.length} configs.`
+        );
+        await this.refreshData();
+      } catch (err: any) {
+        new Notice(`Scaffolding failed: ${err.message}`);
+      } finally {
+        scaffoldBtn.disabled = false;
+        scaffoldBtn.setText("📁 Scaffold Vault");
       }
     });
 

@@ -174,6 +174,18 @@ export class BackendClient {
   }
 
   /**
+   * Explore and synthesize multiple divergent narrative branches without requiring a prompt.
+   */
+  public async exploreBranches(payload: {
+    narrative_position?: number;
+    branch_id?: string;
+    target_characters?: string[];
+    branch_count?: number;
+  }): Promise<Suggestion[]> {
+    return this.request<Suggestion[]>("/api/v1/generate/explore-branches", "POST", payload);
+  }
+
+  /**
    * List suggestions for the active project.
    */
   public async listSuggestions(filter?: {

@@ -5,8 +5,10 @@
 
 import { Notice, Plugin, WorkspaceLeaf } from "obsidian";
 import { BackendClient } from "./api/backendClient";
+import { ExploreBranchesModal } from "./modals/exploreBranchesModal";
 import { GenerateModal } from "./modals/generateModal";
 import { SuggestionReviewModal } from "./modals/suggestionReviewModal";
+import { VaultScaffolder } from "./services/vaultScaffolder";
 import { VaultScanner } from "./services/vaultScanner";
 import { DEFAULT_SETTINGS, SpindleSettingTab } from "./settings";
 import { SpindleSettings } from "./types";
@@ -59,6 +61,32 @@ export class SpindlePlugin extends Plugin {
       name: "Generate with AI (Plot Point, Side Story, Continuity)",
       callback: () => {
         new GenerateModal(this.app, this).open();
+      },
+    });
+
+    // Register Command: Explore Narrative Branches (No prompt required)
+    this.addCommand({
+      id: "explore-narrative-branches",
+      name: "Explore Narrative Branches (No Prompt Required)",
+      callback: () => {
+        new ExploreBranchesModal(this.app, this).open();
+      },
+    });
+
+    // Register Command: Scaffold Vault Structure & Templates
+    this.addCommand({
+      id: "scaffold-vault",
+      name: "Scaffold Story Vault Structure & Templates",
+      callback: async () => {
+        try {
+          const scaffolder = new VaultScaffolder(this.app);
+          const res = await scaffolder.scaffoldAll();
+          new Notice(
+            `Scaffold complete: ${res.foldersCreated.length} folders, ${res.filesCreated.length} templates & docs created.`
+          );
+        } catch (err: any) {
+          new Notice(`Vault scaffolding failed: ${err.message}`);
+        }
       },
     });
 

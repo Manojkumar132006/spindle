@@ -107,6 +107,33 @@ class FakeTestLLMClient(BaseLLMClient):
                 "identified_weaknesses": [],
                 "overall_verdict": "Solid test execution.",
             }
+        elif "branch" in name:
+            data = {
+                "branches": [
+                    {
+                        "branch_name": "Direct Confrontation at the Toll",
+                        "dramatic_angle": "High Stakes Confrontation",
+                        "premise": "Elena confronts the archivist directly.",
+                        "scene_beats": ["Elena demands the ledger", "The archivist threatens alarm", "A standoff ensues"],
+                        "involved_characters": ["Elena Vareth"],
+                        "causal_dependencies": ["Discovery of the Loophole"],
+                        "causal_consequences": ["Archivist sounds alarm"],
+                        "constraint_risks": [],
+                        "supporting_evidence": ["Examples/The Loophole.md"],
+                    },
+                    {
+                        "branch_name": "Covert Night Infiltration",
+                        "dramatic_angle": "Stealth and Deception",
+                        "premise": "Elena sneaks into the archive after curfew.",
+                        "scene_beats": ["Elena bypasses the gate", "She copies the pages", "She escapes unseen"],
+                        "involved_characters": ["Elena Vareth"],
+                        "causal_dependencies": ["Discovery of the Loophole"],
+                        "causal_consequences": ["Parchment reported missing"],
+                        "constraint_risks": [],
+                        "supporting_evidence": ["Examples/The Loophole.md"],
+                    },
+                ]
+            }
         else:
             data = {}
         return response_model.model_validate(data)
