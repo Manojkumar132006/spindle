@@ -102,9 +102,10 @@ async def _execute_generation(
         final_state = await graph.ainvoke(initial_state)
     except Exception as e:
         logger.error("Narrative generation graph execution failed: %s", e, exc_info=True)
+        err_detail = f"{type(e).__name__}: {str(e)}" if str(e) else type(e).__name__
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Narrative generation engine error: {str(e)}",
+            detail=f"Narrative generation engine error: {err_detail}",
         ) from e
 
     suggestion_data = final_state.get("final_suggestion", {})

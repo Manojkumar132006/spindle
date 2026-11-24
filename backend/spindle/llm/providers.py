@@ -128,7 +128,7 @@ class GeminiClient(BaseLLMClient):
         api_key: str,
         model: str = "gemini-3.6-flash",
         base_url: str = "https://generativelanguage.googleapis.com/v1beta",
-        timeout: float = 60.0,
+        timeout: float = 120.0,
         max_retries: int = 2,
     ) -> None:
         self.api_key = api_key
@@ -138,6 +138,7 @@ class GeminiClient(BaseLLMClient):
         self.max_retries = max_retries
         self.fallback_models = [
             "gemini-3.6-flash",
+            "gemini-3-flash-preview",
             "gemini-3.5-flash",
             "gemini-3.7-flash",
             "gemini-flash-latest",
@@ -161,27 +162,33 @@ class GeminiClient(BaseLLMClient):
                 )
                 try:
                     response = await client.post(url, headers=headers, json=payload)
-                    if response.status_code == 404:
-                        # Model not available in this tier/version, try next fallback
+                    if response.status_code in (404, 503, 429, 500, 502):
+                        # Model not available in this tier/version or temporarily overloaded, try next fallback
                         logger.info(
-                            "Gemini model %s returned 404, trying next fallback model...",
+                            "Gemini model %s returned status %d, trying next fallback model...",
                             model_name,
+                            response.status_code,
                         )
                         continue
                     response.raise_for_status()
                     return response.json()
                 except httpx.HTTPStatusError as e:
                     last_error = e
-                    # For non-404 status codes (e.g. 400 bad key, 403 forbidden), don't keep retrying other models
-                    if e.response.status_code != 404:
+                    if e.response.status_code not in (404, 503, 429, 500, 502):
                         break
+                except httpx.TimeoutException as e:
+                    last_error = e
+                    logger.info(
+                        "Gemini model %s timed out, trying next fallback model...", model_name
+                    )
+                    continue
                 except Exception as e:
                     last_error = e
                     break
 
         if last_error:
             raise last_error
-        raise RuntimeError("All Gemini candidate models returned 404 Not Found.")
+        raise RuntimeError("All Gemini candidate models returned errors or unavailable.")
 
     async def generate(
         self,
