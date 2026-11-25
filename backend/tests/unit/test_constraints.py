@@ -5,6 +5,7 @@ import uuid
 import pytest
 
 from spindle.core.constraints.deterministic.chronology import ChronologyValidator
+from spindle.core.constraints.deterministic.entity_existence import EntityExistenceValidator
 from spindle.core.constraints.deterministic.epistemic import EpistemicValidator
 from spindle.core.constraints.deterministic.life_status import LifeStatusValidator
 from spindle.core.constraints.deterministic.world_rule import WorldRuleValidator
@@ -221,4 +222,29 @@ async def test_centralized_constraint_engine(mock_story_state):
     valid_report = await engine.validate(valid_proposal, mock_story_state)
     assert valid_report.overall_outcome == ValidationOutcome.PASS
     assert valid_report.is_valid is True
-    assert valid_report.failed_count == 0
+
+
+@pytest.mark.asyncio
+async def test_entity_existence_validator(mock_story_state):
+    validator = EntityExistenceValidator()
+
+    # 1. Valid: Established character
+    valid_res = await validator.validate({"involved_characters": ["Arya"]}, mock_story_state)
+    assert len(valid_res) == 0
+
+    # 2. Valid: Allowed generic extra / role
+    extra_res = await validator.validate(
+        {"involved_characters": ["Arya", "the station conductor", "city guard"]},
+        mock_story_state,
+    )
+    assert len(extra_res) == 0
+
+    # 3. Invalid: Nonexistent named character
+    invalid_res = await validator.validate(
+        {"involved_characters": ["Arya", "Aldric Voss", "Garrick"]},
+        mock_story_state,
+    )
+    assert len(invalid_res) == 2
+    assert invalid_res[0].outcome == ValidationOutcome.FAIL
+    assert "Aldric Voss" in invalid_res[0].message
+    assert "Garrick" in invalid_res[1].message

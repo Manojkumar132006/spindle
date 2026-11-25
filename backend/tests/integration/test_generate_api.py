@@ -84,17 +84,32 @@ async def test_generate_plot_point_and_suggestions_api(override_db_session, test
         cont_data = cont_resp.json()
         assert cont_data["suggestion_type"] == "continuity_analysis"
 
-        # 4. GET /api/v1/suggestions (list all suggestions)
+        # 4. POST /api/v1/generate/explore-branches (explore branches without a prompt)
+        branch_payload = {
+            "narrative_position": 5.0,
+            "branch_count": 2,
+        }
+        branch_resp = await client.post(
+            "/api/v1/generate/explore-branches", json=branch_payload, headers=headers
+        )
+        assert branch_resp.status_code == 200
+        branch_data = branch_resp.json()
+        assert len(branch_data) == 2
+        assert branch_data[0]["title"] == "Direct Confrontation at the Toll"
+        assert branch_data[1]["title"] == "Covert Night Infiltration"
+        assert "validation_results" in branch_data[0]
+
+        # 5. GET /api/v1/suggestions (list all suggestions)
         list_resp = await client.get("/api/v1/suggestions", headers=headers)
         assert list_resp.status_code == 200
         all_sugs = list_resp.json()
-        assert len(all_sugs) == 3
+        assert len(all_sugs) == 5
 
         # Filter by type
         filter_resp = await client.get("/api/v1/suggestions?type=plot_point", headers=headers)
         assert filter_resp.status_code == 200
         plot_sugs = filter_resp.json()
-        assert len(plot_sugs) == 1
+        assert len(plot_sugs) == 3
         assert plot_sugs[0]["id"] == suggestion_id
 
         # 5. GET /api/v1/suggestions/{suggestion_id}

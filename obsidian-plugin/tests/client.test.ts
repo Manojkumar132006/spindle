@@ -120,6 +120,20 @@ test("BackendClient - generate, approve, edit, and commit suggestion requests", 
         json: async () => ({ id: "sug-1", approval_status: "approved" }),
       } as any;
     }
+    if (String(url).endsWith("/explore-branches")) {
+      return {
+        ok: true,
+        json: async () => [
+          {
+            id: "sug-branch-1",
+            title: "Confrontation Branch",
+            suggestion_type: "plot_point",
+            detailed_content: { dramatic_angle: "Confrontation", scene_beats: ["Beat 1"] },
+            approval_status: "pending_author_approval",
+          },
+        ],
+      } as any;
+    }
     if (String(url).endsWith("/commit")) {
       return {
         ok: true,
@@ -144,16 +158,22 @@ test("BackendClient - generate, approve, edit, and commit suggestion requests", 
     assert.equal(calls[0].url, "http://localhost:8000/api/v1/generate/plot-point");
     assert.equal(calls[0].body.narrative_position, 2.0);
 
+    // 1b. Explore Branches
+    const branches = await client.exploreBranches({ narrative_position: 5.0, branch_count: 2 });
+    assert.equal(calls[1].url, "http://localhost:8000/api/v1/generate/explore-branches");
+    assert.equal(calls[1].body.branch_count, 2);
+    assert.equal(branches[0].title, "Confrontation Branch");
+
     // 2. Approve Suggestion
     const approved = await client.approveSuggestion("sug-1", "Looks great");
-    assert.equal(calls[1].url, "http://localhost:8000/api/v1/suggestions/sug-1/approve");
+    assert.equal(calls[2].url, "http://localhost:8000/api/v1/suggestions/sug-1/approve");
     assert.equal(approved.approval_status, "approved");
 
     // 3. Commit Suggestion
     const committed = await client.commitSuggestion("sug-1", {
       destination_folder: "Manuscript/Side Stories",
     });
-    assert.equal(calls[2].url, "http://localhost:8000/api/v1/suggestions/sug-1/commit");
+    assert.equal(calls[3].url, "http://localhost:8000/api/v1/suggestions/sug-1/commit");
     assert.equal(committed.file_path, "Manuscript/Side Stories/The Secret.md");
   } finally {
     global.fetch = originalFetch;

@@ -81,6 +81,11 @@ def extract_from_document(
     # Always extract section excerpts for source provenance
     extracted.excerpts = extract_provenance_excerpts(doc, source_doc_id)
 
+    # Templates must never be extracted as canon story entities (characters, events, rules)
+    norm_path = doc.file_path.replace("\\", "/").lower()
+    if norm_path.startswith("templates/") or "/templates/" in norm_path:
+        return extracted
+
     # 1. Character Extraction
     if doc.document_type == DocumentType.CHARACTER:
         aliases: list[str] = []

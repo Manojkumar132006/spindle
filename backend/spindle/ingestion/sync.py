@@ -91,10 +91,22 @@ class VaultSyncEngine:
                     result.skipped_files += 1
                     continue
 
-                # 2. Deleted files: remove document
+                # 2. Deleted files: remove document and its extracted entities
                 if change_status == FileChangeStatus.DELETED:
                     doc_to_delete = existing_map.get(file_path)
                     if doc_to_delete:
+                        await self.session.execute(
+                            delete(Character).where(Character.source_document_id == doc_to_delete.id)
+                        )
+                        await self.session.execute(
+                            delete(Location).where(Location.source_document_id == doc_to_delete.id)
+                        )
+                        await self.session.execute(
+                            delete(Event).where(Event.source_document_id == doc_to_delete.id)
+                        )
+                        await self.session.execute(
+                            delete(WorldRule).where(WorldRule.source_document_id == doc_to_delete.id)
+                        )
                         await self.session.delete(doc_to_delete)
                         result.deleted_files += 1
                     continue
@@ -168,6 +180,32 @@ class VaultSyncEngine:
 
             except Exception as e:
                 result.errors.append(f"Error processing {file_path}: {e}")
+
+        # Prune phantom/unanchored entities without source documents in this project
+        await self.session.execute(
+            delete(Character).where(
+                Character.project_id == self.project_id,
+                Character.source_document_id.is_(None),
+            )
+        )
+        await self.session.execute(
+            delete(Event).where(
+                Event.project_id == self.project_id,
+                Event.source_document_id.is_(None),
+            )
+        )
+        await self.session.execute(
+            delete(Location).where(
+                Location.project_id == self.project_id,
+                Location.source_document_id.is_(None),
+            )
+        )
+        await self.session.execute(
+            delete(WorldRule).where(
+                WorldRule.project_id == self.project_id,
+                WorldRule.source_document_id.is_(None),
+            )
+        )
 
         await self.session.commit()
         return result

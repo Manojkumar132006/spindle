@@ -257,8 +257,10 @@ def create_plot_architect_node(llm_client: BaseLLMClient):
             f"Timeline Context: {json.dumps(timeline)}\n"
             f"Causal Context: {json.dumps(causal)}\n"
             f"{revision_text}\n"
-            "Synthesize a grounded narrative proposal strictly adhering to all constraints. "
-            "Use the author's established characters and reference actual vault files (e.g. from Vault Documents) in supporting_evidence."
+            "Synthesize a grounded narrative proposal strictly adhering to all constraints.\n"
+            "CRITICAL: In 'involved_characters', you MUST ONLY include characters explicitly listed under Established Story Characters. "
+            "Do NOT invent, name, or introduce any new characters. If minor background extras are needed, refer to them only by generic title (e.g. 'the conductor'). "
+            "Reference actual vault files (from Vault Documents) in supporting_evidence."
         )
 
         output = await llm_client.generate_structured(

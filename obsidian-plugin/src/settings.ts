@@ -4,6 +4,7 @@
 
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import type { SpindlePlugin } from "./main";
+import { VaultScaffolder } from "./services/vaultScaffolder";
 import { SpindleSettings } from "./types";
 
 export const DEFAULT_SETTINGS: SpindleSettings = {
@@ -152,6 +153,34 @@ export class SpindleSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.autoSyncOnSave = value;
             await this.plugin.saveSettings();
+          })
+      );
+
+    // Vault Scaffolding & Setup Section
+    containerEl.createEl("h3", { text: "Story Vault Scaffolding & Templates" });
+    new Setting(containerEl)
+      .setName("Initialize Story Vault Architecture")
+      .setDesc(
+        "Creates standard novel folders (Manuscript, Characters, Worldbuilding, Plot, Research, Templates), standard templates, Series Bible, and configures Templater and community plugins."
+      )
+      .addButton((button) =>
+        button
+          .setButtonText("📁 Scaffold Vault Structure")
+          .onClick(async () => {
+            button.setDisabled(true);
+            button.setButtonText("Scaffolding...");
+            try {
+              const scaffolder = new VaultScaffolder(this.app);
+              const res = await scaffolder.scaffoldAll();
+              new Notice(
+                `Vault Scaffolding Complete!\n• Folders created: ${res.foldersCreated.length}\n• Templates & documents: ${res.filesCreated.length}\n• Configurations updated: ${res.configsUpdated.length}`
+              );
+            } catch (err: any) {
+              new Notice(`Failed to scaffold vault: ${err.message}`);
+            } finally {
+              button.setDisabled(false);
+              button.setButtonText("📁 Scaffold Vault Structure");
+            }
           })
       );
   }
