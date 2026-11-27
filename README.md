@@ -15,6 +15,23 @@ Spindle is an author-centric narrative intelligence system designed for fiction 
 
 ---
 
+## Documentation
+
+Comprehensive guides for every subsystem are located in [`docs/`](docs/README.md):
+
+- 📖 [**System Architecture & Design**](docs/ARCHITECTURE.md): Full logical layer overview and dataflow.
+- ⚡ [**REST API Reference**](docs/API_REFERENCE.md): Complete specification of all backend endpoints.
+- 🤖 [**Multi-Agent LangGraph Workflow**](docs/MULTI_AGENT_WORKFLOW.md): Detailed 8-agent cognitive pipeline.
+- 🛡️ [**Constraint Engine & Validators**](docs/CONSTRAINT_ENGINE.md): Deterministic rules, hallucination guards, and reports.
+- 📂 [**Vault Ingestion & Sync Engine**](docs/VAULT_INGESTION.md): Markdown AST, Wikilinks, SHA-256 change detection, ghost pruning.
+- 🌿 [**Autonomous Branch Exploration**](docs/BRANCH_EXPLORATION.md): Discovering divergent storylines without prompts.
+- 🔌 [**Obsidian Plugin & Templater Guide**](docs/OBSIDIAN_PLUGIN.md): Desktop plugin, vault scaffolder, and Templater setup.
+- 🗄️ [**Database Schema & Data Models**](docs/DATABASE_MODELS.md): PostgreSQL 16 + pgvector relational schema.
+- 🛠️ [**Developer & Setup Guide**](docs/DEVELOPMENT_GUIDE.md): Local environment setup, test execution, and debugging.
+- 📋 [**Task Tracking Roadmap**](docs/TASKS.md): Implementation milestone log.
+
+---
+
 ## Monorepo Layout
 
 ```
